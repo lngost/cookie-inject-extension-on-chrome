@@ -1,0 +1,16 @@
+{
+	"name": "Cookie Inject",
+	"version": "1.0",
+	"manifest_version": 2,
+	"description": "lite tool for cookie injection",
+	"browser_action": {
+		"default_title": "Cookie Inject",
+		"default_icon": "icon.png",
+		"default_popup": "cookieinj.html"
+	},
+	"permissions": [
+		"cookies",
+		"http://*/*",
+		"https://*/*"
+	]
+}

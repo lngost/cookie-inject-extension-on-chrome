@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>cookie inject</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="bower_components/jquery/dist/jquery.min.js"></script>
+		<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+		<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="cookieinj.js"></script>
+
+		<style>
+			body {
+				width: 700px;
+			}
+			
+			#table-search {
+			    height: 170px;
+			    overflow-y: scroll;
+			}
+			
+			#div-info {
+			    height: 100px;
+			    overflow-y: scroll;
+			    margin-top: 8px;
+			}
+			
+			.nav-tabs li:hover {
+			    cursor: pointer;
+			}
+			
+			.calen-cate {
+			    width: 80px;
+			}
+			
+		</style>
+
+	</head>
+	<body>
+		<div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12">
+                    <ul class="nav nav-tabs">
+                        <li role="presentation" class="active" id="tab-inject"><a>Cookie Inject</a></li>
+                        <li role="presentation" id="tab-search"><a>Cookie Search</a></li>
+                    </ul>
+                </div>
+            </div>
+            <br />
+            
+            <div class="row" id="row-inject">
+                <div class="col-xs-12 col-sm-12">
+                    <p><span class="label label-default">URL :</span> <span id="input-url"></span></p>
+                    <div class="row">
+                        <div class="col-xs-7 col-sm-7">
+                            <p><span class="label label-default">Expire :</span> <span id="input-expire"></span>
+                                <button type='button' class='btn btn-info btn-xs' id='input-date' disabled='disabled'>
+                                    <span class='glyphicon glyphicon-calendar' aria-hidden="true"></span>
+                                </button>
+                            </p>
+                        </div>
+                        <div class="col-xs-5 col-sm-5 calen" id="dpicker1">
+                            <div class="btn-group btn-group-xs" role="group">
+                                <button type="button" class="btn btn-info calen-minus"><span class="glyphicon glyphicon-minus"></span></button>
+                                <button type="button" class="btn btn-default calen-cate onshow" data-cate="year">Year</button>
+                                <button type="button" class="btn btn-default calen-cate" data-cate="month">Month</button>
+                                <button type="button" class="btn btn-default calen-cate" data-cate="date">Date</button>
+                                <button type="button" class="btn btn-default calen-cate" data-cate="hour">hour</button>
+                                <button type="button" class="btn btn-default calen-cate" data-cate="minute">minute</button>
+                                <button type="button" class="btn btn-default calen-cate" data-cate="second">second</button>
+                                <button type="button" class="btn btn-info calen-plus"><span class="glyphicon glyphicon-plus"></span></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-xs-8 col-sm-8">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">Domain:</span>
+                                <input type="text" class="form-control" name="input-cookiedm" aria-describedby="basic-addon1" />
+                            </div>
+                        </div>
+                        <div class="col-xs-4 col-sm-4">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon2">Path:</span>
+                                <input type="text" class="form-control" name="input-path" value="/" aria-describedby="basic-addon2" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-2 col-sm-2">
+                            <div class="checkbox">
+                                <label><input type="checkbox" name="check-secure" />secure</label>
+                            </div>
+                        </div>
+                        <div class="col-xs-2 col-sm-2">
+                            <div class="checkbox">
+                                <label><input type="checkbox" name="check-httponly" />httpOnly</label>
+                            </div>
+                        </div>
+                    </div>
+                    <p>Cookies (format: name1=value1; name2=value2 ...) <span class="label label-info" id="total-injects-count"></span></p>
+                    <textarea class="form-control" rows="5" name="input-cookies"></textarea>
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-3 col-sm-3">
+                            <button type="button" class="btn btn-primary" id="inject">Inject cookies</button>
+                        </div>
+                        <div class="col-xs-9 col-sm-9 text-right">
+                            <button type="button" class="btn btn-default" id="btn-inclear">Clear</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive" id="div-info">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Domain</th>
+                                    <th>Path</th>
+                                    <th>Name</th>
+                                    <th>Expires</th>
+                                    <th>Secure/HttpOnly</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row" id="row-search">
+                <div class="col-xs-12 col-sm-12">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" name="input-search" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" id="search">Search by domain</button>
+                                </span>
+                            </div>
+                            <br />
+                            <div class="table-responsive" id="table-search">
+                                <table class="table table-hover" id="search-result">
+                                    <thead>
+                                        <tr>
+                                            <th>Domain <span class="badge" id="badge-numfound"></span></th>
+                                            <th>Path</th>
+                                            <th>Name</th>
+                                            <th>Secure/HttpOnly</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="well well-sm">
+                                <p><span class="label label-default">URL :</span> <span id="editin-url"></span></p>
+                                <div class="row">
+                                    <div class="col-xs-7 col-sm-7">
+                                        <p><span class="label label-default">Expire :</span> <span id="editin-expire"></span>
+                                            <button type='button' class='btn btn-info btn-xs' id='edit-date' disabled='disabled'>
+                                                <span class='glyphicon glyphicon-calendar' aria-hidden="true"></span>
+                                            </button>
+                                        </p>
+                                    </div>
+                                    <div class="col-xs-5 col-sm-5 calen" id="dpicker2">
+                                        <div class="btn-group btn-group-xs" role="group">
+                                            <button type="button" class="btn btn-info calen-minus"><span class="glyphicon glyphicon-minus"></span></button>
+                                            <button type="button" class="btn btn-default calen-cate onshow" data-cate="year">Year</button>
+                                            <button type="button" class="btn btn-default calen-cate" data-cate="month">Month</button>
+                                            <button type="button" class="btn btn-default calen-cate" data-cate="date">Date</button>
+                                            <button type="button" class="btn btn-default calen-cate" data-cate="hour">hour</button>
+                                            <button type="button" class="btn btn-default calen-cate" data-cate="minute">minute</button>
+                                            <button type="button" class="btn btn-default calen-cate" data-cate="second">second</button>
+                                            <button type="button" class="btn btn-info calen-plus"><span class="glyphicon glyphicon-plus"></span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-8 col-sm-8">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon">Domain:</span>
+                                            <input type="text" class="form-control" name="editin-cookiedm" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-4 col-sm-4">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon">Path:</span>
+                                            <input type="text" class="form-control" name="editin-path" readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-2 col-sm-2">
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" name="editck-secure" disabled="disabled" />secure</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2 col-sm-2">
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" name="editck-httponly" disabled="disabled" />httpOnly</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">Name:</span>
+                                    <input type="text" class="form-control" name="editin-name" readonly />
+                                </div>
+                                <br />
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">Value:</span>
+                                    <input type="text" class="form-control" name="editin-value" readonly />
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-xs-1 col-sm-1">
+                                        <button type="button" class="btn btn-primary btn-sm" id="edit-cookie" disabled="disabled">Edit</button>
+                                    </div>
+                                    <div class="col-xs-3 col-sm-3">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-success btn-sm" id="edit-save" disabled="disabled">Save</button>
+                                            <button type="button" class="btn btn-default btn-sm" id="edit-cancel" disabled="disabled">Cancel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 text-right">
+                                        <button type="button" class="btn btn-danger btn-sm" id="edit-delete" disabled="disabled">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+		</div>
+	</body>
+</html>
+
